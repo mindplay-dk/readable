@@ -3,10 +3,11 @@ mindplay/readable
 
 A few simple functions to format any kind of PHP value or type as human-readable.
 
-This is not "better var_dump" - it won't color-code things or dump object state, there are
-plenty of other libraries for that sort of thing.
+[![PHP Version](https://img.shields.io/badge/php-5.4%2B-blue.svg)](https://packagist.org/packages/mindplay/middleman)
+[![Build Status](https://travis-ci.org/mindplay-dk/readable.svg)](https://travis-ci.org/mindplay-dk/readable)
+[![Code Coverage](https://scrutinizer-ci.com/g/mindplay-dk/readable/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/mindplay-dk/readable/?branch=master)
 
-Mainly this is intended to help you produce better error-messages:
+Mainly, this is intended to help you produce better error-messages:
 
 ```php
 if (!is_int($value)) {
@@ -15,6 +16,9 @@ if (!is_int($value)) {
     throw new RangeException("expected value up to 100, got: " . readable::value($value));
 }
 ```
+
+Note that this library is not "better var_dump" - it won't color-code things or dump deep
+object graphs. There are plenty of other libraries for that sort of thing.
 
 Presently, this library consists of these simple functions:
 
@@ -27,4 +31,4 @@ The latter function `callback()` will fall back to regular `value()` formatting 
 value is not a callable - this function is preferable when a given value was expected to be
 `callable`, e.g. recognizes function-names as strings and objects implementing `__invoke()`.
 
-See the [test suite](test/test.php) for all formatting features.
+See the [source code](src/readable.php) and [test suite](test/test.php) for all formatting features.
