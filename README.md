@@ -26,6 +26,9 @@ Presently, this library consists of these simple functions:
   * `readable::values($array)` formats an array of (mixed) values as human-readable.
   * `readable::typeof($value)` returns the type of value (or class name) for any given value.
   * `readable::callback($callable)` formats any `callable` as human-readable.
+  * `readable::severity($int)` returns for example `E_WARNING` as human-readable `"Warning"`.
+  * `readable::error($exception)` returns a human-readable `Exception`/`Error` summary.
+  * `readable::trace($trace)` formats a stack-trace with file-names, line-numbers, function-names and (optionally) arguments.
 
 The latter function `callback()` will fall back to regular `value()` formatting if the given
 value is not a callable - this function is preferable when a given value was expected to be

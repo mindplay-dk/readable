@@ -63,6 +63,56 @@ test(
 
         eq(readable::value('0123456789'), '"0123456789"');
         eq(readable::value('01234567890'), '"0123456789...[11]"');
+
+        foreach (readable::$severity_names as $value => $name) {
+            eq(readable::severity($value), $name);
+            eq(readable::error($value), $name);
+        }
+
+        eq(readable::severity(0), "{unknown error-code}");
+
+        $test = new TraceTest();
+
+        try {
+            $test->outer("hello");
+        } catch (Exception $e) {
+            // caught
+        }
+
+        /**
+         * @var Exception $e
+         */
+
+        ok(isset($e));
+        ok($e instanceof Exception);
+
+        $summary = readable::error($e);
+
+        ok(
+            preg_match('/^Exception with message: got hello in .*fixtures.php\(\d+\)$/', $summary) === 1,
+            "exception summary has expected format",
+            $summary
+        );
+
+        $trace = readable::trace($e);
+
+        $expected_trace = <<<TRACE
+    1. *fixtures.php:38 TraceTest->{closure}()
+    2. *fixtures.php:29 TraceTest->inner("hello")
+    3. *test.php:77 TraceTest->outer("hello")
+TRACE;
+
+        $regex = str_replace(
+            ['\*', '\?', "\r", "\n"], # wildcards
+            ['.*', '.',  '',   '\n'], # expressions
+            preg_quote($expected_trace)
+        );
+
+        ok(
+            preg_match("/^{$regex}/s", $trace) === 1,
+            "stack-trace has expected format",
+            $trace
+        );
     }
 );
 

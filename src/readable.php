@@ -3,6 +3,9 @@
 namespace mindplay;
 
 use Closure;
+use Error;
+use ErrorException;
+use Exception;
 use ReflectionFunction;
 
 /**
@@ -15,6 +18,27 @@ abstract class readable
      * @var int strings longer than this number of characters will be truncated when formatting string-values
      */
     public static $max_string_length = 120;
+
+    /**
+     * @var string[] map where PHP error severity code => constant name
+     */
+    public static $severity_names = [
+        E_ERROR             => "E_ERROR",
+        E_USER_ERROR        => "E_USER_ERROR",
+        E_CORE_ERROR        => "E_CORE_ERROR",
+        E_COMPILE_ERROR     => "E_COMPILE_ERROR",
+        E_PARSE             => "E_PARSE",
+        E_WARNING           => "E_WARNING",
+        E_USER_WARNING      => "E_USER_WARNING",
+        E_CORE_WARNING      => "E_CORE_WARNING",
+        E_COMPILE_WARNING   => "E_COMPILE_WARNING",
+        E_NOTICE            => "E_NOTICE",
+        E_USER_NOTICE       => "E_USER_NOTICE",
+        E_STRICT            => "E_STRICT",
+        E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
+        E_DEPRECATED        => "E_DEPRECATED",
+        E_USER_DEPRECATED   => "E_USER_DEPRECATED",
+    ];
 
     /**
      * @param mixed $value any type of PHP value
@@ -57,7 +81,7 @@ abstract class readable
 
                     return "{Closure in " . $reflection->getFileName() . "({$reflection->getStartLine()})}";
                 }
-                
+
                 return "{" . ($value instanceof \stdClass ? "object" : get_class($value)) . "}";
 
             case "resource":
@@ -67,7 +91,7 @@ abstract class readable
                 return is_object($value[0])
                     ? '{' . get_class($value[0]) . "}->{$value[1]}()"
                     : "{$value[0]}::{$value[1]}()";
-            
+
             case "null":
                 return "null";
         }
@@ -77,7 +101,7 @@ abstract class readable
 
     /**
      * @param array $array array containing any type of PHP values
-     *                     
+     *
      * @return string comma-separated human-readable representation of the given values
      */
     public static function values(array $array)
@@ -95,12 +119,12 @@ abstract class readable
 
     /**
      * @param mixed $value any type of PHP value
-     * 
+     *
      * @return string human-readable type-name
      */
     public static function typeof($value)
     {
-        $type = !is_string($value) && !is_object($value) && is_callable($value)
+        $type = ! is_string($value) && ! is_object($value) && is_callable($value)
             ? "callable"
             : strtolower(gettype($value));
 
@@ -120,13 +144,13 @@ abstract class readable
             case "null":
                 return $type;
         }
-        
+
         return "unknown";
     }
 
     /**
      * @param mixed $callable
-     * 
+     *
      * @return string human-readable description of callback
      */
     public static function callback($callable)
@@ -138,7 +162,106 @@ abstract class readable
                 ? self::value($callable)
                 : "{" . get_class($callable) . "}->__invoke()";
         }
-        
+
         return self::value($callable);
+    }
+
+    /**
+     * @param Exception|Error|int $error an Exception, Error (or one of the E_* error severity constants)
+     *
+     * @return string
+     */
+    public static function error($error)
+    {
+        if (is_int($error)) {
+            return static::severity($error);
+        }
+
+        $type = get_class($error);
+
+        if ($error instanceof ErrorException) {
+            $severity = static::severity($error->getSeverity());
+
+            $type = "{$type}: {$severity}";
+        }
+
+        if ($error instanceof Exception || $error instanceof Error) {
+            $message = $error->getMessage() ?: '{none}';
+
+            $file = $error->getFile()
+                ? $error->getFile() . "(" . $error->getLine() . ")"
+                : "{no file}";
+
+            return "{$type} with message: {$message} in {$file}";
+        }
+
+        return $type;
+    }
+
+    /**
+     * @param int $severity one of the E_* error severity constants
+     *
+     * @return string
+     */
+    public static function severity($severity)
+    {
+        return isset(self::$severity_names[$severity])
+            ? self::$severity_names[$severity]
+            : "{unknown error-code}";
+    }
+
+    /**
+     * @param array|Exception|Error $source      Exception, Error or stack-trace data as provided
+     *                                           by Exception::getTrace() or debug_backtrace()
+     * @param bool                  $with_params if TRUE, calls will be formatted with parameters
+     *
+     * @return string
+     */
+    public static function trace($source, $with_params = true)
+    {
+        if ($source instanceof Exception || $source instanceof Error) {
+            $trace = $source->getTrace();
+        } elseif (is_array($source)) {
+            $trace = $source;
+        } else {
+            return "{stack-trace unavailable}";
+        }
+
+        $formatted = [];
+
+        foreach ($trace as $index => $entry) {
+            $line = array_key_exists("line", $entry)
+                ? ":" . $entry["line"]
+                : "";
+
+            $file = isset($entry["file"])
+                ? $entry["file"]
+                : "{no file}";
+
+            $function = isset($entry["class"])
+                ? $entry["class"] . @$entry["type"] . @$entry["function"]
+                : @$entry["function"];
+
+            if ($function === "require" || $function === "include") {
+                // bypass argument formatting for include and require statements
+                $args = isset($entry["args"]) && is_array($entry["args"])
+                    ? reset($entry["args"])
+                    : "";
+            } else {
+                $args = $with_params && isset($entry["args"]) && is_array($entry["args"])
+                    ? static::values($entry["args"])
+                    : "";
+            }
+
+            $call = $function
+                ? "{$function}({$args})"
+                : "";
+
+            $depth = $index + 1;
+
+            $formatted[] = sprintf("%6s", "{$depth}.") . " {$file}{$line} {$call}";
+        }
+
+        return implode("\n", $formatted);
     }
 }
