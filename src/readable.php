@@ -7,6 +7,7 @@ use Error;
 use ErrorException;
 use Exception;
 use ReflectionFunction;
+use Throwable;
 
 /**
  * Pseudo-namespace for functions that generate human-readable string representations
@@ -167,7 +168,7 @@ abstract class readable
     }
 
     /**
-     * @param Exception|Error|int $error an Exception, Error (or one of the E_* error severity constants)
+     * @param Exception|Error|Throwable|int $error an Exception, Error (or one of the E_* error severity constants)
      *
      * @return string
      */
@@ -211,9 +212,9 @@ abstract class readable
     }
 
     /**
-     * @param array|Exception|Error $source      Exception, Error or stack-trace data as provided
-     *                                           by Exception::getTrace() or debug_backtrace()
-     * @param bool                  $with_params if TRUE, calls will be formatted with parameters
+     * @param array|Exception|Error|Throwable $source      Exception, Error or stack-trace data as provided
+     *                                                     by Exception::getTrace() or by debug_backtrace()
+     * @param bool                            $with_params if TRUE, calls will be formatted with parameters
      *
      * @return string
      */
