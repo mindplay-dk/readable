@@ -3,7 +3,7 @@ mindplay/readable
 
 A few simple functions to format any kind of PHP value or type as human-readable.
 
-[![PHP Version](https://img.shields.io/badge/php-5.4%2B-blue.svg)](https://packagist.org/packages/mindplay/middleman)
+[![PHP Version](https://img.shields.io/badge/php-5.4%2B-blue.svg)](https://packagist.org/packages/mindplay/readable)
 [![Build Status](https://travis-ci.org/mindplay-dk/readable.svg)](https://travis-ci.org/mindplay-dk/readable)
 [![Code Coverage](https://scrutinizer-ci.com/g/mindplay-dk/readable/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/mindplay-dk/readable/?branch=master)
 
