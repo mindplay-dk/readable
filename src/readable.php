@@ -88,6 +88,10 @@ abstract class readable
             case "resource":
                 return "{" . get_resource_type($value) . "}";
 
+            case "resource (closed)":
+                // TODO this provides BC for breaking changes in PHP 7.2 (should be changed in a major release)
+                return "{unknown type}";
+
             case "callable":
                 return is_object($value[0])
                     ? '{' . get_class($value[0]) . "}->{$value[1]}()"
