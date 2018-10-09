@@ -32,7 +32,7 @@ test(
         eq(readable::value(['TestClass', 'staticMethod']), 'TestClass::staticMethod()');
         eq(readable::value(empty_closure()), '{Closure in ' . __DIR__ . DIRECTORY_SEPARATOR . 'fixtures.php(22)}');
         eq(readable::value(new InvokableTestClass()), '{InvokableTestClass}');
-        eq(readable::value($unknown), '{unknown type}');
+        eq(readable::value($unknown), '{' . get_resource_type($unknown) . '}');
 
         eq(readable::values(["foo", true, 1]), '"foo", true, 1');
         eq(readable::values(["hello" => "world"]), '"hello" => "world"');
