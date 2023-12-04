@@ -3,7 +3,7 @@ mindplay/readable
 
 A few simple functions to format any kind of PHP value or type as human-readable.
 
-[![PHP Version](https://img.shields.io/badge/php-5.4%2B-blue.svg)](https://packagist.org/packages/mindplay/readable)
+[![PHP Version](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://packagist.org/packages/mindplay/readable)
 [![Build Status](https://travis-ci.org/mindplay-dk/readable.svg)](https://travis-ci.org/mindplay-dk/readable)
 [![Code Coverage](https://scrutinizer-ci.com/g/mindplay-dk/readable/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/mindplay-dk/readable/?branch=master)
 
@@ -29,6 +29,7 @@ Presently, this library consists of these simple functions:
   * `readable::severity($int)` returns for example `E_WARNING` as human-readable `"Warning"`.
   * `readable::error($exception)` returns a human-readable `Exception`/`Error` summary.
   * `readable::trace($trace)` formats a stack-trace with file-names, line-numbers, function-names and (optionally) arguments.
+  * `readable::path($path)` removes the project root path from the start of a path.
 
 The latter function `callback()` will fall back to regular `value()` formatting if the given
 value is not a callable - this function is preferable when a given value was expected to be
