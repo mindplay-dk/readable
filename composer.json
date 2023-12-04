@@ -7,7 +7,7 @@
         "php": ">=5.4"
     },
     "require-dev": {
-        "mindplay/testies": "dev-master",
+        "mindplay/testies": "^1.0",
         "phpunit/php-code-coverage": ">=2, <4"
     },
     "autoload": {

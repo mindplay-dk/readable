@@ -6,8 +6,11 @@ use Closure;
 use Error;
 use ErrorException;
 use Exception;
+use ReflectionClass;
 use ReflectionFunction;
 use Throwable;
+
+readable::$root_path = dirname((new ReflectionClass('Composer\Autoload\ClassLoader'))->getFileName(), 3) . DIRECTORY_SEPARATOR;
 
 /**
  * Pseudo-namespace for functions that generate human-readable string representations
@@ -21,19 +24,26 @@ abstract class readable
     public static $max_string_length = 120;
 
     /**
+     * @var string absolute path to project root directory
+     */
+    public static $root_path = "";
+
+    /**
      * @var string[] map where PHP error severity code => constant name
+     * 
+     * @link https://www.php.net/manual/en/errorfunc.constants.php
      */
     public static $severity_names = [
         E_ERROR             => "E_ERROR",
-        E_USER_ERROR        => "E_USER_ERROR",
-        E_CORE_ERROR        => "E_CORE_ERROR",
-        E_COMPILE_ERROR     => "E_COMPILE_ERROR",
-        E_PARSE             => "E_PARSE",
         E_WARNING           => "E_WARNING",
-        E_USER_WARNING      => "E_USER_WARNING",
-        E_CORE_WARNING      => "E_CORE_WARNING",
-        E_COMPILE_WARNING   => "E_COMPILE_WARNING",
+        E_PARSE             => "E_PARSE",
         E_NOTICE            => "E_NOTICE",
+        E_CORE_ERROR        => "E_CORE_ERROR",
+        E_CORE_WARNING      => "E_CORE_WARNING",
+        E_COMPILE_ERROR     => "E_COMPILE_ERROR",
+        E_COMPILE_WARNING   => "E_COMPILE_WARNING",
+        E_USER_ERROR        => "E_USER_ERROR",
+        E_USER_WARNING      => "E_USER_WARNING",
         E_USER_NOTICE       => "E_USER_NOTICE",
         E_STRICT            => "E_STRICT",
         E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
@@ -216,13 +226,14 @@ abstract class readable
     }
 
     /**
-     * @param array|Exception|Error|Throwable $source      Exception, Error or stack-trace data as provided
-     *                                                     by Exception::getTrace() or by debug_backtrace()
-     * @param bool                            $with_params if TRUE, calls will be formatted with parameters
+     * @param array|Exception|Error|Throwable $source Exception, Error or stack-trace data as provided
+     *                                                by `Throwable::getTrace()` or by `debug_backtrace()`
+     * @param bool $with_params if TRUE, calls will be formatted with parameters (default: TRUE)
+     * @param bool $relative_paths if TRUE, paths will be relative to project root (default: FALSE)
      *
      * @return string
      */
-    public static function trace($source, $with_params = true)
+    public static function trace($source, $with_params = true, $relative_paths = false)
     {
         if ($source instanceof Exception || $source instanceof Error) {
             $trace = $source->getTrace();
@@ -234,6 +245,8 @@ abstract class readable
 
         $formatted = [];
 
+        $indent = strlen(count($trace)) + 2;
+
         foreach ($trace as $index => $entry) {
             $line = array_key_exists("line", $entry)
                 ? ":" . $entry["line"]
@@ -241,7 +254,11 @@ abstract class readable
 
             $file = isset($entry["file"])
                 ? $entry["file"]
-                : "{no file}";
+                : "[internal function]";
+            
+            if ($relative_paths) {
+                $file = self::path($file);
+            }
 
             $function = isset($entry["class"])
                 ? $entry["class"] . @$entry["type"] . @$entry["function"]
@@ -264,9 +281,21 @@ abstract class readable
 
             $depth = $index + 1;
 
-            $formatted[] = sprintf("%6s", "{$depth}.") . " {$file}{$line} {$call}";
+            $formatted[] = sprintf("%{$indent}s", "{$depth}. ") . "{$file}{$line} {$call}";
         }
 
         return implode("\n", $formatted);
+    }
+
+    /**
+     * @param string $path absolute path
+     * 
+     * @return string relative path (from project root folder)
+     */
+    public static function path($path)
+    {
+        return str_starts_with($path, self::$root_path)
+            ? substr($path, strlen(self::$root_path))
+            : $path;
     }
 }

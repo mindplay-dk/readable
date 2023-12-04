@@ -1,6 +1,9 @@
 <?php
 
 use mindplay\readable;
+use function mindplay\testies\{ test, run, configure, eq, ok };
+
+ini_set('zend.exception_ignore_args', '0'); // enable capture of exception arguments
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -64,6 +67,9 @@ test(
         eq(readable::value('0123456789'), '"0123456789"');
         eq(readable::value('01234567890'), '"0123456789...[11]"');
 
+        eq(readable::path(__FILE__), "test/test.php");
+        eq(readable::path("/somewhere/else"), "/somewhere/else");
+
         foreach (readable::$severity_names as $value => $name) {
             eq(readable::severity($value), $name);
             eq(readable::error($value), $name);
@@ -94,24 +100,39 @@ test(
             $summary
         );
 
-        $trace = readable::trace($e);
+        $trace = array_slice($e->getTrace(), 0, 3);
 
         $expected_trace = <<<TRACE
-    1. *fixtures.php:38 TraceTest->{closure}()
-    2. *fixtures.php:29 TraceTest->inner("hello")
-    3. *test.php:77 TraceTest->outer("hello")
+1. test/fixtures.php:38 TraceTest->{closure}()
+2. test/fixtures.php:29 TraceTest->inner("hello")
+3. test/test.php:83 TraceTest->outer("hello")
 TRACE;
 
-        $regex = str_replace(
-            ['\*', '\?', "\r", "\n"], # wildcards
-            ['.*', '.',  '',   '\n'], # expressions
-            preg_quote($expected_trace)
+        eq(
+            readable::trace($trace, true, true),
+            $expected_trace,
+            "stack-trace has expected format"
         );
 
-        ok(
-            preg_match("/^{$regex}/s", $trace) === 1,
-            "stack-trace has expected format",
-            $trace
+        $long_trace = array_fill(0, 10, $trace[2]);
+
+        $expected_long_trace = <<<TRACE
+ 1. test/test.php:83 TraceTest->outer()
+ 2. test/test.php:83 TraceTest->outer()
+ 3. test/test.php:83 TraceTest->outer()
+ 4. test/test.php:83 TraceTest->outer()
+ 5. test/test.php:83 TraceTest->outer()
+ 6. test/test.php:83 TraceTest->outer()
+ 7. test/test.php:83 TraceTest->outer()
+ 8. test/test.php:83 TraceTest->outer()
+ 9. test/test.php:83 TraceTest->outer()
+10. test/test.php:83 TraceTest->outer()
+TRACE;
+
+        eq(
+            readable::trace($long_trace, false, true),
+            $expected_long_trace,
+            "long stack-traces are corrently indented"
         );
     }
 );
