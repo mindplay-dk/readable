@@ -21,19 +21,19 @@ abstract class readable
     /**
      * @var int strings longer than this number of characters will be truncated when formatting string-values
      */
-    public static $max_string_length = 120;
+    public static int $max_string_length = 120;
 
     /**
      * @var string absolute path to project root directory
      */
-    public static $root_path = "";
+    public static string $root_path = "";
 
     /**
      * @var string[] map where PHP error severity code => constant name
      * 
      * @link https://www.php.net/manual/en/errorfunc.constants.php
      */
-    public static $severity_names = [
+    public static array $severity_names = [
         E_ERROR             => "E_ERROR",
         E_WARNING           => "E_WARNING",
         E_PARSE             => "E_PARSE",
@@ -56,7 +56,7 @@ abstract class readable
      *
      * @return string readable representation of the given value
      */
-    public static function value($value)
+    public static function value(mixed $value): string
     {
         $type = is_array($value) && is_callable($value)
             ? "callable"
@@ -119,7 +119,7 @@ abstract class readable
      *
      * @return string comma-separated human-readable representation of the given values
      */
-    public static function values(array $array)
+    public static function values(array $array): string
     {
         $formatted = array_map(['mindplay\\readable', 'value'], $array);
 
@@ -137,7 +137,7 @@ abstract class readable
      *
      * @return string human-readable type-name
      */
-    public static function typeof($value)
+    public static function typeof(mixed $value): string
     {
         $type = ! is_string($value) && ! is_object($value) && is_callable($value)
             ? "callable"
@@ -164,11 +164,11 @@ abstract class readable
     }
 
     /**
-     * @param mixed $callable
+     * @param mixed $callable callable, or any value, with fallback to `readable::value()`
      *
      * @return string human-readable description of callback
      */
-    public static function callback($callable)
+    public static function callback($callable): string
     {
         if (is_string($callable) && is_callable($callable)) {
             return "{$callable}()";
@@ -186,7 +186,7 @@ abstract class readable
      *
      * @return string
      */
-    public static function error($error)
+    public static function error($error): string
     {
         if (is_int($error)) {
             return static::severity($error);
@@ -218,7 +218,7 @@ abstract class readable
      *
      * @return string
      */
-    public static function severity($severity)
+    public static function severity($severity): string
     {
         return isset(self::$severity_names[$severity])
             ? self::$severity_names[$severity]
@@ -233,7 +233,7 @@ abstract class readable
      *
      * @return string
      */
-    public static function trace($source, $with_params = true, $relative_paths = false)
+    public static function trace($source, $with_params = true, $relative_paths = false): string
     {
         if ($source instanceof Exception || $source instanceof Error) {
             $trace = $source->getTrace();
@@ -292,7 +292,7 @@ abstract class readable
      * 
      * @return string relative path (from project root folder)
      */
-    public static function path($path)
+    public static function path(string $path): string
     {
         return str_starts_with($path, self::$root_path)
             ? substr($path, strlen(self::$root_path))
