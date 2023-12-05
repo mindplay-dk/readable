@@ -33,7 +33,7 @@ test(
         eq(readable::value($file), '{stream}');
         eq(readable::value([new TestClass(), 'instanceMethod']), '{TestClass}->instanceMethod()');
         eq(readable::value(['TestClass', 'staticMethod']), 'TestClass::staticMethod()');
-        eq(readable::value(empty_closure()), '{Closure in ' . __DIR__ . DIRECTORY_SEPARATOR . 'fixtures.php(22)}');
+        eq(readable::value(empty_closure()), '{Closure in test/fixtures.php(22)}');
         eq(readable::value(new InvokableTestClass()), '{InvokableTestClass}');
         eq(readable::value($unknown), '{unknown type}');
 
@@ -57,7 +57,7 @@ test(
         eq(readable::callback(new InvokableTestClass()), '{InvokableTestClass}->__invoke()');
         eq(readable::callback([new TestClass(), 'instanceMethod']), '{TestClass}->instanceMethod()');
         eq(readable::callback(['TestClass', 'staticMethod']), 'TestClass::staticMethod()');
-        eq(readable::callback(empty_closure()), '{Closure in ' . __DIR__ . DIRECTORY_SEPARATOR . 'fixtures.php(22)}');
+        eq(readable::callback(empty_closure()), '{Closure in test/fixtures.php(22)}');
         eq(readable::callback('is_array'), 'is_array()');
 
         fclose($file);

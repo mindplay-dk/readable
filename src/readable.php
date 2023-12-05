@@ -90,7 +90,7 @@ abstract class readable
                 if ($value instanceof Closure) {
                     $reflection = new ReflectionFunction($value);
 
-                    return "{Closure in " . $reflection->getFileName() . "({$reflection->getStartLine()})}";
+                    return "{Closure in " . self::path($reflection->getFileName()) . "({$reflection->getStartLine()})}";
                 }
 
                 return "{" . ($value instanceof \stdClass ? "object" : get_class($value)) . "}";
