@@ -10,6 +10,9 @@
         "mindplay/testies": "^1.0",
         "phpunit/php-code-coverage": "^9.2.5"
     },
+    "scripts": {
+        "test": "XDEBUG_MODE=coverage php test/test.php"
+    },
     "autoload": {
         "classmap": [
             "src/"
