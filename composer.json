@@ -7,7 +7,7 @@
         "php": "^8.0"
     },
     "require-dev": {
-        "mindplay/testies": "^1.1@dev",
+        "mindplay/testies": "^1.1",
         "phpunit/php-code-coverage": "^10"
     },
     "scripts": {
