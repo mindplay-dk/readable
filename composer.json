@@ -4,7 +4,7 @@
     "description": "Formats PHP values as human-readable strings",
     "license": "MIT",
     "require": {
-        "php": "^8.0"
+        "php": "^8.1"
     },
     "require-dev": {
         "mindplay/testies": "^1.1",
