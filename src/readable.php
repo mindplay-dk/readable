@@ -121,7 +121,7 @@ abstract class readable
      */
     public static function values(array $array): string
     {
-        $formatted = array_map(['mindplay\\readable', 'value'], $array);
+        $formatted = array_map(static::value(...), $array);
 
         if (array_keys($array) !== range(0, count($array) - 1)) {
             foreach ($formatted as $name => $value) {
