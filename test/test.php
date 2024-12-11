@@ -102,8 +102,12 @@ test(
 
         $trace = array_slice($e->getTrace(), 0, 3);
 
+        $closure_trace_format = PHP_VERSION_ID >= 80400
+            ? '{closure:TraceTest::inner():34}' // PHP 8.4 has an improved closure trace format
+            : '{closure}';
+
         $expected_trace = <<<TRACE
-1. test/fixtures.php:38 TraceTest->{closure}()
+1. test/fixtures.php:38 TraceTest->{$closure_trace_format}()
 2. test/fixtures.php:29 TraceTest->inner("hello")
 3. test/test.php:83 TraceTest->outer("hello")
 TRACE;
