@@ -6,6 +6,7 @@ A few simple functions to format any kind of PHP value or type as human-readable
 [![PHP Version](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://packagist.org/packages/mindplay/readable)
 [![Build Status](https://github.com/mindplay-dk/readable/actions/workflows/ci.yml/badge.svg)](https://github.com/mindplay-dk/readable/actions/workflows/ci.yml)
 [![Code Coverage](https://scrutinizer-ci.com/g/mindplay-dk/readable/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/mindplay-dk/readable/?branch=master)
+[![License](https://img.shields.io/badge/license-MPL--2.0-green)](https://opensource.org/license/mpl-2-0)
 
 Mainly, this is intended to help you produce better error-messages:
 
