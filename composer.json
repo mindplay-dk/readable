@@ -2,7 +2,7 @@
     "name": "mindplay/readable",
     "type": "library",
     "description": "Formats PHP values as human-readable strings",
-    "license": "MIT",
+    "license": "MPL-2.0",
     "require": {
         "php": "^8.0"
     },
